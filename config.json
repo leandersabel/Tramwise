@@ -1,0 +1,16 @@
+{
+  "stations": [
+    {
+      "name": "Zürich, Bahnhofplatz/HB",
+      "limit": "5",
+      "distance": 5,
+      "lines": [
+        {
+          "category": "T",
+          "number": "6",
+          "to": "Zürich, Zoo"
+        }
+      ]
+    }
+  ]
+}
