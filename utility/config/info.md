@@ -1,0 +1,1 @@
+This folder will eventually hold a small utility to generate valid station configuration files.
