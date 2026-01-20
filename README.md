@@ -4,7 +4,7 @@ A MicroPython e-paper departure board for Swiss public transport. Displays real-
 
 ## Hardware
 
-- Raspberry Pi Pico W (or Pico 2 W)
+- Raspberry Pi Pico 2W
 - Waveshare 3.7" e-Paper display (480x280)
 
 ## Installation
@@ -25,10 +25,11 @@ Uses the free [Swiss public transport API](https://transport.opendata.ch) (no au
 
 ## Credits
 
-- Font: [Jersey](https://github.com/scfried/soft-type-jersey) by scfried
+- Waveshare eInk driver: [pico-epaper](https://github.com/phoreglad/pico-epaper) by phoreglad
+- Font: [Jersey](https://github.com/scfried/soft-type-jersey) by scfried (SIL)
 - Icons: [Phosphor Icons](https://phosphoricons.com/) (MIT)
-- [micropython-font-to-py](https://github.com/peterhinch/micropython-font-to-py) by Peter Hinch (MIT)
-- [epaper-img-converter](https://github.com/phoreglad/epaper-img-converter) by phoreglad
+- Font converter: [micropython-font-to-py](https://github.com/peterhinch/micropython-font-to-py) by Peter Hinch (MIT)
+- Bitmap converter: [epaper-img-converter](https://github.com/phoreglad/epaper-img-converter) by phoreglad
 - Inspiration: [Tramli](https://tramli.com/)
 
 ## License
