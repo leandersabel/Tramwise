@@ -45,6 +45,8 @@ class TransportDisplay:
         self.tramwise_logo = FrameBuffer(tramwise_logo.img_bw, tramwise_logo.width, tramwise_logo.height, MONO_HLSB)
         self.tramwise_banner = FrameBuffer(tramwise_banner.img_bw, tramwise_banner.width, tramwise_banner.height, MONO_HLSB)
 
+        self.draw_loading_screen()
+
     def draw_loading_screen(self):
         self.canvas.blit(self.tramwise_logo, 0, 20)
         self.display.blit(self.canvas, 0, 0)
@@ -64,8 +66,9 @@ class TransportDisplay:
         wifi_icon = self.icon_wifi if wifi_connected else self.icon_wifi_off
         self.canvas.blit(wifi_icon, x, 0)
 
-        api_icon = self.icon_api if api_connected else self.icon_api_off
-        self.canvas.blit(api_icon, x + wifi_high_32.width + margin, 0)
+        if api_connected is not None:
+            api_icon = self.icon_api if api_connected else self.icon_api_off
+            self.canvas.blit(api_icon, x + wifi_high_32.width + margin, 0)
 
     def _render_connection(self, connection, x):
         """Render a single connection row at vertical position x."""

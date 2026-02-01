@@ -6,40 +6,26 @@
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 import time
-import config.settings, config.messages
+import ntptime
+
+import config.settings
 from lib.display import TransportDisplay
 from lib.networking import Networking, TransportAPIClient
 
 
 def main():
-    td = TransportDisplay(config.settings.active_display)
-    td.draw_loading_screen()
+    display = TransportDisplay(config.settings.active_display)
     net = Networking()
-
-    def on_retry(attempt, max_retries, delay):
-        msg = config.messages.wifi_retry.format(delay=delay, attempt=attempt, max=max_retries)
-        td.display_message(msg)
-
-    def on_reconnect():
-        td.display_message(config.messages.wifi_reconnecting)
-
-    connected, result = net.connect_with_retries(on_retry)
-    if not connected:
-        td.display_message(f'{config.messages.no_wifi}{result}')
-        td.display_message(config.messages.shutdown)
-        return
-
     api = TransportAPIClient()
 
     while True:
-        if not net.ensure_connected(on_reconnect, on_retry):
-            td.display_message(config.messages.shutdown)
-            return
+        if not net.is_connected():
+            net.connect_to_wifi()
+            ntptime.settime()
 
-        tramwise_board, api_ok = api.get_tramwise_board()
-        td.display_board(tramwise_board, net.is_connected(), api_ok)
-        time.sleep(30)
-
+        board = api.get_tramwise_board()
+        display.display_board(board, net.is_connected(), api.api_ok)
+        time.sleep(config.settings.refresh_rate)
 
 if __name__ == "__main__":
     main()

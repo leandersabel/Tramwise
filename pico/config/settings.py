@@ -1,6 +1,7 @@
 from assets import jersey15_24_de, jersey20_29_de
 
 active_display = 'pico_ePaper_37_landscape'
+refresh_rate = 30
 display_parameters = {
     'pico_ePaper_37_landscape': {
         'display_width': 480,
@@ -21,8 +22,7 @@ display_parameters = {
 
 wifi_connect_timeout = 10
 wifi_poll_interval = 0.5
-wifi_max_retries = 5
-wifi_retry_delay = 30
+wifi_retry_delay = 10
 
 api_base_url = 'https://transport.opendata.ch/v1/'
 api_stationboard = 'stationboard'

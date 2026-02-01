@@ -11,3 +11,11 @@ SAFE_CHARS = b'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.
 def urlencode(s):
     """URL-encode a string for use in query parameters."""
     return ''.join(chr(c) if c in SAFE_CHARS else f'%{c:02X}' for c in s.encode('utf-8'))
+
+
+def safe(func, default=None):
+    """Execute func and return its result, or default if any exception occurs."""
+    try:
+        return func()
+    except:
+        return default

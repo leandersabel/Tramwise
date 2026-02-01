@@ -1,6 +1,0 @@
-init_wifi = 'Initializing wifi ...'
-no_wifi = 'Unable to connect. Please check configured networks. Available networks: '
-wifi_ok = 'Successfully connected to '
-wifi_retry = 'WiFi connection failed. Retrying in {delay}s ({attempt}/{max}) ...'
-wifi_reconnecting = 'WiFi lost. Reconnecting ...'
-shutdown = 'Shutting down ...'
