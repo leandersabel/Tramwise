@@ -19,3 +19,10 @@ def safe(func, default=None):
         return func()
     except:
         return default
+
+
+def get_stations(ssid):
+    """Resolve station config for the given SSID, falling back to the default."""
+    import config.settings, config.stations
+    key = config.stations.ssid_configs.get(ssid, config.settings.default_stations_config)
+    return config.stations.configurations[key]
