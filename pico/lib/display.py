@@ -11,7 +11,7 @@ from lib.ePaper import EinkPIO
 from lib.writer import Writer
 
 from config import settings
-from assets import run_24, door_24, wifi_high_32, wifi_slash_32, globe_32, globe_x_32, tramwise_logo, tramwise_banner
+from assets import run_24, door_24, wifi_high_32, wifi_slash_32, globe_32, globe_x_32, tramwise_logo
 
 
 class Canvas(FrameBuffer):
@@ -23,6 +23,15 @@ class Canvas(FrameBuffer):
         self._buf = bytearray(width * height // 8)
         super().__init__(self._buf, width, height, MONO_HLSB)
         self.fill(1)
+
+
+def _truncate(text, writer, max_width):
+    """Truncate text to fit within max_width pixels, adding '..' if needed."""
+    if writer.stringlen(text) <= max_width:
+        return text
+    while text and writer.stringlen(text + '..') > max_width:
+        text = text[:-1]
+    return text + '..'
 
 
 class TransportDisplay:
@@ -42,13 +51,12 @@ class TransportDisplay:
         self.icon_wifi_off = FrameBuffer(wifi_slash_32.img_bw, wifi_slash_32.width, wifi_slash_32.height, MONO_HLSB)
         self.icon_api = FrameBuffer(globe_32.img_bw, globe_32.width, globe_32.height, MONO_HLSB)
         self.icon_api_off = FrameBuffer(globe_x_32.img_bw, globe_x_32.width, globe_x_32.height, MONO_HLSB)
-        self.tramwise_logo = FrameBuffer(tramwise_logo.img_bw, tramwise_logo.width, tramwise_logo.height, MONO_HLSB)
-        self.tramwise_banner = FrameBuffer(tramwise_banner.img_bw, tramwise_banner.width, tramwise_banner.height, MONO_HLSB)
 
-        self.draw_loading_screen()
+        self._show_loading_screen()
 
-    def draw_loading_screen(self):
-        self.canvas.blit(self.tramwise_logo, 0, 20)
+    def _show_loading_screen(self):
+        logo = FrameBuffer(tramwise_logo.img_bw, tramwise_logo.width, tramwise_logo.height, MONO_HLSB)
+        self.canvas.blit(logo, 0, 20)
         self.display.blit(self.canvas, 0, 0)
         self.display.show(lut=1)
 
@@ -70,31 +78,22 @@ class TransportDisplay:
             api_icon = self.icon_api if api_connected else self.icon_api_off
             self.canvas.blit(api_icon, x + wifi_high_32.width + margin, 0)
 
+    def _fits_on_canvas(self, x, item_height):
+        """Check if an item of given height fits at position x."""
+        return x + item_height <= self.canvas.height
+
     def _render_connection(self, connection, x):
         """Render a single connection row at vertical position x."""
         cols = self.params['columns']
 
         self._draw_text(x, cols['line'], connection.category + connection.number)
-        self._draw_text(x, cols['destination'], connection.to)
+        max_dest = cols['icon'] - cols['destination']
+        self._draw_text(x, cols['destination'], _truncate(connection.to, self.ink_body, max_dest))
         self._draw_text(x, cols['time'], f'{connection.departure} ({connection.mtd}\')')
 
         icon = self.icon_hurry if connection.hurry else (self.icon_leave_now if connection.leave_now else None)
         if icon:
             self.canvas.blit(icon, cols['icon'], x)
-
-    def display_message(self, message):
-        """Display a message with the banner at the top."""
-        self.canvas.fill(1)
-        banner_x = (self.display.width - tramwise_banner.width) // 2
-        self.canvas.blit(self.tramwise_banner, banner_x, 0)
-        text_y = tramwise_banner.height + self.params['margin']
-        self._draw_text(text_y, self.params['margin'], message)
-        self.display.blit(self.canvas, 0, 0)
-        self.display.show(lut=1)
-
-    def _fits_on_canvas(self, x, item_height):
-        """Check if an item of given height fits at position x."""
-        return x + item_height <= self.canvas.height
 
     def display_board(self, board: list, wifi_connected=True, api_connected=True):
         """Render the full departure board."""
@@ -108,7 +107,8 @@ class TransportDisplay:
         for name, connections in board:
             if not self._fits_on_canvas(x, header_height):
                 break
-            self._draw_text(x, self.params['margin'], name, self.ink_header)
+            max_header = self.params['columns']['icon'] - self.params['margin']
+            self._draw_text(x, self.params['margin'], _truncate(name, self.ink_header, max_header), self.ink_header)
             x += header_height
 
             for connection in connections:

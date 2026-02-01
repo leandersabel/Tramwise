@@ -5,7 +5,7 @@
 #
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-import network, time, requests
+import network, time, requests, ntptime
 
 import config.settings, config.stations
 from config import secrets
@@ -24,6 +24,7 @@ class Networking:
     def connect_to_wifi(self):
         """Connects to the first known Wi-Fi network, if available"""
         available = {net[0].decode() for net in self.wlan.scan()}
+        print(available)
         known = available & set(secrets.wifi_networks)
 
         def __try_network(ssid):
@@ -59,8 +60,8 @@ class TransportAPIClient:
     def __get_station_board(self, station):
         """Fetches and filters connections for a single station."""
         board = self.__fetch_stationboard(station['name'])
-        routes = {(c['category'], c['number'], c['to']) for c in station['monitored_connections']}
-        connections = [Connection.from_json(c, station['thresholds']) for c in board if (c['category'], c['number'], c['to']) in routes]
+        routes = {(c['category'], c['number'], c['to']) for c in station.get('monitored_connections', [])}
+        connections = [Connection.from_json(c, station['thresholds']) for c in board if (c['category'], c['number'], c['to']) in routes] if routes else [Connection.from_json(c, station['thresholds']) for c in board]
         reachable = [c for c in connections if not c.unreachable][:station['rows']]
         return [station['name'], reachable]
 
@@ -72,6 +73,7 @@ class TransportAPIClient:
                f'&{self.fields_query}')
 
         try:
+            ntptime.settime()
             response = requests.get(url)
             if response.status_code != 200:
                 raise ValueError

@@ -6,7 +6,7 @@
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 import time
-import ntptime
+
 
 import config.settings
 from lib.display import TransportDisplay
@@ -21,7 +21,6 @@ def main():
     while True:
         if not net.is_connected():
             net.connect_to_wifi()
-            ntptime.settime()
 
         board = api.get_tramwise_board()
         display.display_board(board, net.is_connected(), api.api_ok)
