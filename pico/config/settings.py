@@ -21,7 +21,6 @@ display_parameters = {
     },
 }
 
-cpu_freq = 100_000_000
 wifi_connect_timeout = 10
 wifi_poll_interval = 0.1
 ntp_sync_interval = 1800

@@ -16,7 +16,6 @@ from lib.utils import get_stations
 
 
 def main():
-    machine.freq(config.settings.cpu_freq)
     display = TransportDisplay(config.settings.active_display)
     net = Networking()
     api = TransportAPIClient()
