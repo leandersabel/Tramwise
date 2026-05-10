@@ -5,7 +5,8 @@
 #
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-import time
+import gc
+import machine
 
 
 import config.settings
@@ -15,6 +16,7 @@ from lib.utils import get_stations
 
 
 def main():
+    machine.freq(config.settings.cpu_freq)
     display = TransportDisplay(config.settings.active_display)
     net = Networking()
     api = TransportAPIClient()
@@ -30,7 +32,8 @@ def main():
             board = []
         net.down()
         display.display_board(board, wifi_ok, api.api_ok)
-        time.sleep(config.settings.refresh_rate)
+        gc.collect()
+        machine.lightsleep(config.settings.refresh_rate * 1000)
 
 if __name__ == "__main__":
     main()
