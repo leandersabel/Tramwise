@@ -20,12 +20,14 @@ def main():
     api = TransportAPIClient()
 
     while True:
-        if not net.is_connected():
-            net.connect_to_wifi()
-
-        net.sync_time(config.settings.ntp_sync_interval)
-        board = api.get_tramwise_board(get_stations(net.ssid))
-        display.display_board(board, net.is_connected(), api.api_ok)
+        wifi_ok = net.up()
+        if wifi_ok:
+            net.sync_time(config.settings.ntp_sync_interval)
+            board = api.get_tramwise_board(get_stations(net.ssid))
+        else:
+            board = []
+        net.down()
+        display.display_board(board, wifi_ok, api.api_ok)
         time.sleep(config.settings.refresh_rate)
 
 if __name__ == "__main__":

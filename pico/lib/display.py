@@ -59,6 +59,7 @@ class TransportDisplay:
         self.canvas.blit(logo, 0, 20)
         self.display.blit(self.canvas, 0, 0)
         self.display.show(lut=1)
+        self.display.sleep()
 
     def _draw_text(self, x, y, text, writer=None):
         """Draw text at position using the specified writer."""
@@ -97,6 +98,7 @@ class TransportDisplay:
 
     def display_board(self, board: list, wifi_connected=True, api_connected=True):
         """Render the full departure board."""
+        self.display.reinit()
         self.canvas.fill(1)
         self._draw_status_icons(wifi_connected, api_connected)
 
@@ -121,3 +123,4 @@ class TransportDisplay:
 
         self.display.blit(self.canvas, 0, 0)
         self.display.show(lut=1)
+        self.display.sleep()

@@ -2,7 +2,7 @@ from assets import jersey15_24_de, jersey20_29_de
 
 active_display = 'pico_ePaper_37_landscape'
 default_stations_config = 'home'
-refresh_rate = 30
+refresh_rate = 60
 display_parameters = {
     'pico_ePaper_37_landscape': {
         'display_width': 480,

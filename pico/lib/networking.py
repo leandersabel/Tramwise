@@ -16,16 +16,15 @@ class Networking:
     """Handles Wi-Fi connectivity."""
 
     def __init__(self):
-        """Initializes and activates the WLAN interface."""
+        """Initializes the WLAN interface (does not power it on)."""
         self.wlan = network.WLAN(network.STA_IF)
-        self.wlan.active(True)
         self.ssid = None
         self.last_ntp_sync = 0
 
-    def connect_to_wifi(self):
-        """Connects to the first known Wi-Fi network, if available"""
+    def up(self):
+        """Power on Wi-Fi and connect to the first known network. Returns True on success."""
+        self.wlan.active(True)
         available = {net[0].decode() for net in self.wlan.scan()}
-        print(available)
         known = available & set(secrets.wifi_networks)
 
         def __try_network(ssid):
@@ -33,11 +32,19 @@ class Networking:
             self.wlan.connect(ssid, secrets.wifi_networks[ssid])
             deadline = time.time() + config.settings.wifi_connect_timeout
             while time.time() < deadline and not self.wlan.isconnected():
-                print(f'Retrying until {deadline}')
                 time.sleep(config.settings.wifi_poll_interval)
             return self.wlan.isconnected()
 
         self.ssid = next((ssid for ssid in known if __try_network(ssid)), None)
+        return self.ssid is not None
+
+    def down(self):
+        """Disconnect and power down Wi-Fi."""
+        try:
+            self.wlan.disconnect()
+        except OSError:
+            pass
+        self.wlan.active(False)
 
     def sync_time(self, ntp_sync_interval):
         """Sync clock via NTP if the sync interval has elapsed."""
@@ -48,11 +55,6 @@ class Networking:
             self.last_ntp_sync = time.time()
         except OSError:
             pass
-
-    def is_connected(self):
-        """Returns True if Wi-Fi is currently connected."""
-        return self.wlan.isconnected()
-
 
 class TransportAPIClient:
     """Client for the Swiss public transport API."""
@@ -85,6 +87,7 @@ class TransportAPIClient:
                f'&limit={config.settings.api_query_limit}'
                f'&{self.fields_query}')
 
+        response = None
         try:
             response = requests.get(url)
             if response.status_code != 200:
@@ -93,3 +96,6 @@ class TransportAPIClient:
         except (OSError, ValueError):
             self.api_ok = False
             return []
+        finally:
+            if response is not None:
+                response.close()
