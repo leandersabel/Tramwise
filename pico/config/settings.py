@@ -22,7 +22,7 @@ display_parameters = {
 }
 
 wifi_connect_timeout = 10
-wifi_poll_interval = 0.5
+wifi_poll_interval = 0.1
 ntp_sync_interval = 1800
 
 api_base_url = 'https://transport.opendata.ch/v1/'

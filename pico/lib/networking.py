@@ -16,13 +16,14 @@ class Networking:
     """Handles Wi-Fi connectivity."""
 
     def __init__(self):
-        """Initializes the WLAN interface (does not power it on)."""
-        self.wlan = network.WLAN(network.STA_IF)
+        """Initializes Networking state (radio is created on demand in up())."""
+        self.wlan = None
         self.ssid = None
         self.last_ntp_sync = 0
 
     def up(self):
         """Power on Wi-Fi and connect to the first known network. Returns True on success."""
+        self.wlan = network.WLAN(network.STA_IF)
         self.wlan.active(True)
         available = {net[0].decode() for net in self.wlan.scan()}
         known = available & set(secrets.wifi_networks)
@@ -39,12 +40,18 @@ class Networking:
         return self.ssid is not None
 
     def down(self):
-        """Disconnect and power down Wi-Fi."""
+        """Disconnect and power down the cyw43 chip."""
+        if self.wlan is None:
+            return
         try:
             self.wlan.disconnect()
         except OSError:
             pass
-        self.wlan.active(False)
+        if hasattr(self.wlan, 'deinit'):
+            self.wlan.deinit()
+        else:
+            self.wlan.active(False)
+        self.wlan = None
 
     def sync_time(self, ntp_sync_interval):
         """Sync clock via NTP if the sync interval has elapsed."""
