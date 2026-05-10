@@ -1,4 +1,6 @@
-# Tramwise
+<p align="center">
+  <img src="assets/img/logos/tramwise_logo_1280x640.png" alt="Tramwise" width="480">
+</p>
 
 A MicroPython e-paper departure board for Swiss public transport. Displays real-time tram, bus, and train departures on a Raspberry Pi Pico W with a Waveshare 3.7" e-paper display.
 
