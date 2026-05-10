@@ -6,3 +6,4 @@ __pycache__/
 
 /pico/config/secrets.py
 /pico/config/stations.py
+*.af~lock~
