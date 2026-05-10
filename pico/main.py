@@ -19,6 +19,8 @@ def main():
     net = Networking()
     api = TransportAPIClient()
 
+    display.show_loading()
+
     while True:
         wifi_ok = net.up()
         if wifi_ok:

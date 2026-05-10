@@ -52,9 +52,8 @@ class TransportDisplay:
         self.icon_api = FrameBuffer(globe_32.img_bw, globe_32.width, globe_32.height, MONO_HLSB)
         self.icon_api_off = FrameBuffer(globe_x_32.img_bw, globe_x_32.width, globe_x_32.height, MONO_HLSB)
 
-        self._show_loading_screen()
-
-    def _show_loading_screen(self):
+    def show_loading(self):
+        """Render the boot logo. Call once on cold boot only."""
         logo = FrameBuffer(tramwise_logo.img_bw, tramwise_logo.width, tramwise_logo.height, MONO_HLSB)
         self.canvas.blit(logo, 0, 20)
         self.display.blit(self.canvas, 0, 0)
