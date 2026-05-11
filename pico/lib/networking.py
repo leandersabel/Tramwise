@@ -19,7 +19,6 @@ class Networking:
         """Initializes Networking state (radio is created on demand in up())."""
         self.wlan = None
         self.ssid = None
-        self.last_ntp_sync = 0
 
     def up(self):
         """Power on Wi-Fi and connect to the first known network. Returns True on success."""
@@ -53,13 +52,10 @@ class Networking:
             self.wlan.active(False)
         self.wlan = None
 
-    def sync_time(self, ntp_sync_interval):
-        """Sync clock via NTP if the sync interval has elapsed."""
-        if time.time() - self.last_ntp_sync < ntp_sync_interval:
-            return
+    def sync_time(self):
+        """Sync clock via NTP. Runs every cycle since machine.lightsleep can leave the RTC stalled."""
         try:
             ntptime.settime()
-            self.last_ntp_sync = time.time()
         except OSError:
             pass
 

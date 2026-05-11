@@ -25,7 +25,7 @@ def main():
     while True:
         wifi_ok = net.up()
         if wifi_ok:
-            net.sync_time(config.settings.ntp_sync_interval)
+            net.sync_time()
             board = api.get_tramwise_board(get_stations(net.ssid))
         else:
             board = []
